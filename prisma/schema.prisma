@@ -12,3 +12,55 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                String    @id @default(uuid())
+  clerkUserId       String    @unique
+  email             String    @unique
+  role              String
+  name              String?
+  imageUrl          String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
+  bioTitle          String?
+  bio               String?
+  skills            String[]
+  jobsApplied       Job[]     @relation("AppliedJobs")
+  jobsCompleted     Job[]     @relation("CompletedJobs")
+  jobsOngoing       Job[]     @relation("OngoingJobs")
+  jobsPosted        Job[]     @relation("PostedJobs")
+}
+
+model Job {
+  id                  String    @id @default(uuid())
+  title               String
+  description         String
+  category            String[]
+  budgetMin           Float
+  budgetMax           Float
+  deadline            DateTime
+  jobDifficulty       String
+  projectLength       String
+  keyResponsibilities String[]
+  requiredSkills      String[]
+  tools               String[]
+  scope               String
+  name                String
+  email               String
+  company             String?
+  note                String?
+  videoFileUrl        String?
+  postedTime          DateTime  @default(now())
+  isVerified          Boolean   @default(true)
+  location            String    @default("Remote")
+  proposals           Int       @default(0)
+  categoryColor       String    @default("blue")
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
+  creatorId           String
+  creator             User      @relation("PostedJobs", fields: [creatorId], references: [clerkUserId])
+  appliedBy           User[]    @relation("AppliedJobs")
+  completedBy         User[]    @relation("CompletedJobs")
+  ongoingBy           User[]    @relation("OngoingJobs")
+  star                Int
+}
